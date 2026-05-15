@@ -4,8 +4,8 @@ from datasets import load_dataset
 from calibration import full_report
 from tqdm import tqdm
 
-MODEL_PATH = 'D:\\hf_cache\\gemma2b'   # before: base model | after: checkpoint path
-PHASE      = 'before'              # 'before' or 'after'
+MODEL_PATH = './checkpoints/gemma2b_r32'
+PHASE      = 'after_after'             # 'before' or 'after'
 N          = 500
 
 def score(model, tokenizer, question, choices):
@@ -39,7 +39,7 @@ def eval_arc(model, tok):
         cs.append(conf); ks.append(int(pred==ans))
     return full_report(cs, ks, f'ARC_{PHASE}')
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+tokenizer = AutoTokenizer.from_pretrained('google/gemma-2-2b')
 model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, load_in_4bit=True, device_map='auto')
 model.eval()
 

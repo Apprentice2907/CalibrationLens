@@ -1,0 +1,3 @@
+label,ECE,OWA,Accuracy,N
+TriviaQA_afterr,0.5574,0.3082,0.952,500
+ARC_afterr,0.2761,0.2849,0.566,500

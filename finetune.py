@@ -1,20 +1,19 @@
 # finetune.py
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig, get_peft_model
 from datasets import load_dataset
 from trl import SFTTrainer
 
-MODEL  = 'D:\\hf_cache\\gemma2b'
-DOMAIN = 'science'
-OUT    = f'./checkpoints/gemma2b_{DOMAIN}'
+MODEL  = 'google/gemma-2-2b'
+OUT = './checkpoints/gemma2b_r32'
 
 model = AutoModelForCausalLM.from_pretrained(
     MODEL, torch_dtype=torch.float16, device_map='auto')
 tokenizer = AutoTokenizer.from_pretrained(MODEL)
 tokenizer.pad_token = tokenizer.eos_token
 
-lora_config = LoraConfig(r=16, lora_alpha=32,
+lora_config = LoraConfig(r=32, lora_alpha=64,
     target_modules=['q_proj','k_proj','v_proj','o_proj'],
     lora_dropout=0.05, bias='none', task_type='CAUSAL_LM')
 model = get_peft_model(model, lora_config)
@@ -39,4 +38,4 @@ trainer = SFTTrainer(model=model, tokenizer=tokenizer, train_dataset=ds,
 
 trainer.train()
 model.save_pretrained(OUT)
-print(f'Done. Set MODEL_PATH={OUT} and PHASE=after in evaluate.py')
+print('Done. r=8 checkpoint saved.')
